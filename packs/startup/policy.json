@@ -1,0 +1,123 @@
+{
+  "name": "Startup",
+  "version": 1,
+  "rules": [
+    {
+      "id": "block-destructive-commands",
+      "effect": "DENY",
+      "permission": "EXECUTE",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 10,
+      "commandConstraints": {
+        "denied": [
+          "rm -rf /",
+          "rm -rf /*",
+          "rm -rf ~",
+          "rm -rf ~/",
+          "sudo rm -rf*",
+          "mkfs*",
+          "dd if=*",
+          "deltree*",
+          "shred /dev*",
+          "wipefs*",
+          "fdisk*",
+          ":(){:|:&};:"
+        ]
+      },
+      "description": "Block only truly catastrophic commands (rm -rf /, dd on devices, etc.)"
+    },
+    {
+      "id": "block-credential-files",
+      "effect": "DENY",
+      "permission": ["READ", "WRITE", "DELETE"],
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 20,
+      "filenameConstraints": {
+        "denied": [
+          ".env",
+          ".env.production",
+          ".env.prod",
+          "*.key",
+          "*.pem",
+          "*.p12",
+          "*.pfx",
+          "*.secret",
+          "credentials.json",
+          "secrets.yaml",
+          "secrets.yml",
+          "id_rsa",
+          "id_ed25519",
+          "service-account.json"
+        ]
+      },
+      "description": "Block production credential and private key files"
+    },
+    {
+      "id": "block-system-paths",
+      "effect": "DENY",
+      "permission": ["WRITE", "DELETE"],
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 30,
+      "pathConstraints": {
+        "denied": [
+          "/etc/**",
+          "/usr/**",
+          "/bin/**",
+          "/sbin/**",
+          "/boot/**",
+          "/root/**",
+          "/sys/**",
+          "/proc/**",
+          "C:\\Windows\\",
+          "C:\\Windows\\System32\\",
+          "C:\\Program Files\\",
+          "C:\\Program Files (x86)\\"
+        ],
+        "allowSymlinks": false
+      },
+      "description": "Block writes to system directories (read is allowed for debugging)"
+    },
+    {
+      "id": "block-ssrf",
+      "effect": "DENY",
+      "permission": "READ",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 40,
+      "urlConstraints": {
+        "denied": [
+          "http://**",
+          "*localhost*",
+          "*127.0.0.1*",
+          "*0.0.0.0*",
+          "*169.254.*",
+          "*10.*",
+          "*192.168.*",
+          "*172.16.*",
+          "*172.17.*",
+          "*172.18.*",
+          "*172.19.*",
+          "*172.20.*",
+          "*172.21.*",
+          "*172.22.*",
+          "*172.23.*",
+          "*172.24.*",
+          "*172.25.*",
+          "*172.26.*",
+          "*172.27.*",
+          "*172.28.*",
+          "*172.29.*",
+          "*172.30.*",
+          "*172.31.*"
+        ]
+      },
+      "description": "Block SSRF attacks: HTTP, localhost, and all internal/private IP ranges"
+    },
+    {
+      "id": "allow-everything-else",
+      "effect": "ALLOW",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 1000,
+      "description": "Allow all tool calls not explicitly blocked above"
+    }
+  ]
+}

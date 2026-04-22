@@ -1,0 +1,207 @@
+{
+  "name": "Vibe Coder",
+  "version": 1,
+  "rules": [
+    {
+      "id": "block-destructive-commands",
+      "effect": "DENY",
+      "permission": "EXECUTE",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 10,
+      "commandConstraints": {
+        "denied": [
+          "rm -rf*",
+          "rm -r *",
+          "sudo*",
+          "mkfs*",
+          "dd if=*",
+          "format*",
+          "deltree*",
+          "shred*",
+          "wipefs*",
+          "fdisk*",
+          ":(){:|:&};:"
+        ]
+      },
+      "description": "Block destructive and dangerous shell commands"
+    },
+    {
+      "id": "block-package-managers",
+      "effect": "DENY",
+      "permission": "EXECUTE",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 15,
+      "commandConstraints": {
+        "denied": [
+          "npm install*",
+          "npm i *",
+          "npm i",
+          "pip install*",
+          "pip3 install*",
+          "brew install*",
+          "brew upgrade*",
+          "apt install*",
+          "apt-get install*",
+          "apt-get upgrade*",
+          "apk add*",
+          "yarn add*",
+          "pnpm add*",
+          "pnpm install*",
+          "gem install*",
+          "cargo install*",
+          "go install*"
+        ]
+      },
+      "description": "Block package manager installs — agent cannot add packages without approval"
+    },
+    {
+      "id": "block-credential-files",
+      "effect": "DENY",
+      "permission": ["READ", "WRITE", "DELETE"],
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 20,
+      "filenameConstraints": {
+        "denied": [
+          ".env",
+          ".env.*",
+          "*.key",
+          "*.pem",
+          "*.p12",
+          "*.pfx",
+          "*.secret",
+          "*.secrets",
+          "credentials.json",
+          "secrets.yaml",
+          "secrets.yml",
+          "id_rsa",
+          "id_rsa.pub",
+          "id_ed25519",
+          "id_ed25519.pub",
+          "id_dsa",
+          "id_ecdsa",
+          "*.keystore",
+          "*.jks",
+          "*.pkcs12",
+          "token.json",
+          "service-account.json"
+        ]
+      },
+      "description": "Block all credential, secret, and private key files"
+    },
+    {
+      "id": "block-sensitive-paths",
+      "effect": "DENY",
+      "permission": ["READ", "WRITE", "MOVE", "DELETE"],
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 30,
+      "pathConstraints": {
+        "denied": [
+          "**/.ssh/**",
+          "**/.gnupg/**",
+          "**/secrets/**",
+          "**/private/**",
+          "/etc/**",
+          "/usr/**",
+          "/bin/**",
+          "/sbin/**",
+          "/boot/**",
+          "/root/**",
+          "/sys/**",
+          "/proc/**",
+          "C:\\Windows\\",
+          "C:\\Windows\\System32\\",
+          "C:\\Program Files\\",
+          "C:\\Program Files (x86)\\",
+          "C:\\Users\\\\.ssh\\",
+          "C:\\Users\\\\.gnupg\\"
+        ],
+        "allowSymlinks": false
+      },
+      "description": "Block sensitive system and secret directories"
+    },
+    {
+      "id": "block-solongate-config",
+      "effect": "DENY",
+      "permission": ["READ", "WRITE", "DELETE"],
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 35,
+      "pathConstraints": {
+        "denied": [
+          "**/.solongate/**"
+        ],
+        "allowSymlinks": false
+      },
+      "description": "Block self-tampering: agent cannot read or modify SolonGate config"
+    },
+    {
+      "id": "block-ssrf",
+      "effect": "DENY",
+      "permission": "READ",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 40,
+      "urlConstraints": {
+        "denied": [
+          "http://**",
+          "*localhost*",
+          "*127.0.0.1*",
+          "*0.0.0.0*",
+          "*169.254.*",
+          "*10.*",
+          "*192.168.*",
+          "*172.16.*",
+          "*172.17.*",
+          "*172.18.*",
+          "*172.19.*",
+          "*172.20.*",
+          "*172.21.*",
+          "*172.22.*",
+          "*172.23.*",
+          "*172.24.*",
+          "*172.25.*",
+          "*172.26.*",
+          "*172.27.*",
+          "*172.28.*",
+          "*172.29.*",
+          "*172.30.*",
+          "*172.31.*"
+        ]
+      },
+      "description": "Block SSRF attacks: HTTP, localhost, and all internal/private IP ranges"
+    },
+    {
+      "id": "allow-git-commands",
+      "effect": "ALLOW",
+      "permission": "EXECUTE",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 100,
+      "commandConstraints": {
+        "allowed": [
+          "git*",
+          "ls*",
+          "cat*",
+          "echo*",
+          "pwd*",
+          "cd*",
+          "mkdir*",
+          "cp*",
+          "mv*",
+          "touch*",
+          "grep*",
+          "find*",
+          "which*",
+          "node *",
+          "node",
+          "npx*"
+        ]
+      },
+      "description": "Allow safe read/navigation commands and git"
+    },
+    {
+      "id": "allow-everything-else",
+      "effect": "ALLOW",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 1000,
+      "description": "Allow all tool calls not explicitly blocked above"
+    }
+  ]
+}

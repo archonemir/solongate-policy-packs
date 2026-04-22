@@ -1,0 +1,177 @@
+{
+  "name": "Freelancer",
+  "version": 1,
+  "rules": [
+    {
+      "id": "block-destructive-commands",
+      "effect": "DENY",
+      "permission": "EXECUTE",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 10,
+      "commandConstraints": {
+        "denied": [
+          "rm -rf*",
+          "rm -r *",
+          "sudo*",
+          "mkfs*",
+          "dd if=*",
+          "format*",
+          "deltree*",
+          "shred*",
+          "wipefs*",
+          "fdisk*"
+        ]
+      },
+      "description": "Block destructive and dangerous shell commands"
+    },
+    {
+      "id": "block-database-direct-access",
+      "effect": "DENY",
+      "permission": "EXECUTE",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 15,
+      "commandConstraints": {
+        "denied": [
+          "mysql *",
+          "mysql --*",
+          "mysqldump*",
+          "psql *",
+          "psql --*",
+          "pg_dump*",
+          "pg_restore*",
+          "mongodump*",
+          "mongorestore*",
+          "mongo --*",
+          "redis-cli *",
+          "redis-cli --*",
+          "sqlite3 *"
+        ]
+      },
+      "description": "Block direct database CLI access with connection flags"
+    },
+    {
+      "id": "block-credential-files",
+      "effect": "DENY",
+      "permission": ["READ", "WRITE", "DELETE"],
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 20,
+      "filenameConstraints": {
+        "denied": [
+          ".env",
+          ".env.*",
+          "*.key",
+          "*.pem",
+          "*.p12",
+          "*.pfx",
+          "*.secret",
+          "*.secrets",
+          "credentials.json",
+          "secrets.yaml",
+          "secrets.yml",
+          "id_rsa",
+          "id_rsa.pub",
+          "id_ed25519",
+          "id_ed25519.pub",
+          "id_dsa",
+          "id_ecdsa",
+          "*.keystore",
+          "*.jks",
+          "token.json",
+          "service-account.json"
+        ]
+      },
+      "description": "Block all credential, secret, and private key files"
+    },
+    {
+      "id": "block-production-paths",
+      "effect": "DENY",
+      "permission": ["READ", "WRITE", "MOVE", "DELETE"],
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 25,
+      "pathConstraints": {
+        "denied": [
+          "**/prod/**",
+          "**/production/**",
+          "**/prod-*/**",
+          "**/client-data/**",
+          "**/customer-data/**"
+        ],
+        "allowSymlinks": false
+      },
+      "description": "Block access to production environments and client data directories"
+    },
+    {
+      "id": "block-sensitive-paths",
+      "effect": "DENY",
+      "permission": ["READ", "WRITE", "MOVE", "DELETE"],
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 30,
+      "pathConstraints": {
+        "denied": [
+          "**/.ssh/**",
+          "**/.gnupg/**",
+          "**/secrets/**",
+          "**/private/**",
+          "/etc/**",
+          "/usr/**",
+          "/bin/**",
+          "/sbin/**",
+          "/boot/**",
+          "/root/**",
+          "/sys/**",
+          "/proc/**",
+          "C:\\Windows\\",
+          "C:\\Windows\\System32\\",
+          "C:\\Program Files\\",
+          "C:\\Program Files (x86)\\",
+          "C:\\Users\\\\.ssh\\",
+          "C:\\Users\\\\.gnupg\\"
+        ],
+        "allowSymlinks": false
+      },
+      "description": "Block sensitive system directories"
+    },
+    {
+      "id": "block-ssrf",
+      "effect": "DENY",
+      "permission": "READ",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 40,
+      "urlConstraints": {
+        "denied": [
+          "http://**",
+          "*localhost*",
+          "*127.0.0.1*",
+          "*0.0.0.0*",
+          "*169.254.*",
+          "*10.*",
+          "*192.168.*",
+          "*172.16.*",
+          "*172.17.*",
+          "*172.18.*",
+          "*172.19.*",
+          "*172.20.*",
+          "*172.21.*",
+          "*172.22.*",
+          "*172.23.*",
+          "*172.24.*",
+          "*172.25.*",
+          "*172.26.*",
+          "*172.27.*",
+          "*172.28.*",
+          "*172.29.*",
+          "*172.30.*",
+          "*172.31.*"
+        ]
+      },
+      "description": "Block SSRF attacks: HTTP, localhost, and all internal/private IP ranges"
+    },
+    {
+      "id": "allow-everything-else",
+      "effect": "ALLOW",
+      "minimumTrustLevel": "UNTRUSTED",
+      "priority": 1000,
+      "description": "Allow all tool calls not explicitly blocked above"
+    }
+  ]
+}
